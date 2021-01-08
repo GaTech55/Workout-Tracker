@@ -1,6 +1,7 @@
 const express = require("express");
 const logger = require("morgan");
 const mongoose = require("mongoose");
+const connection = mongoose.connection;
 
 const PORT = process.env.PORT || 3000;
 
@@ -15,43 +16,50 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/populate", { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workouts", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true,
+});
 
 db.Library.create({ name: "Campus Library" })
-  .then(dbLibrary => {
+  .then((dbLibrary) => {
     console.log(dbLibrary);
   })
-  .catch(({message}) => {
+  .catch(({ message }) => {
     console.log(message);
   });
 
-app.post("/submit", ({body}, res) => {
+app.post("/submit", ({ body }, res) => {
   db.Book.create(body)
-    .then(({_id}) => db.Library.findOneAndUpdate({}, { $push: { books: _id } }, { new: true }))
-    .then(dbLibrary => {
+    .then(({ _id }) =>
+      db.Library.findOneAndUpdate({}, { $push: { books: _id } }, { new: true })
+    )
+    .then((dbLibrary) => {
       res.json(dbLibrary);
     })
-    .catch(err => {
+    .catch((err) => {
       res.json(err);
     });
 });
 
 app.get("/books", (req, res) => {
   db.Book.find({})
-    .then(dbBook => {
+    .then((dbBook) => {
       res.json(dbBook);
     })
-    .catch(err => {
+    .catch((err) => {
       res.json(err);
     });
 });
 
 app.get("/library", (req, res) => {
   db.Library.find({})
-    .then(dbLibrary => {
+    .then((dbLibrary) => {
       res.json(dbLibrary);
     })
-    .catch(err => {
+    .catch((err) => {
       res.json(err);
     });
 });
@@ -59,10 +67,10 @@ app.get("/library", (req, res) => {
 app.get("/populated", (req, res) => {
   db.Library.find({})
     .populate("books")
-    .then(dbLibrary => {
+    .then((dbLibrary) => {
       res.json(dbLibrary);
     })
-    .catch(err => {
+    .catch((err) => {
       res.json(err);
     });
 });
