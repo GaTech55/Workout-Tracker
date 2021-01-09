@@ -14,15 +14,15 @@ router.get("/api/workouts", (req, res) => {
       res.json(err);
     });
 });
-router.get("/api/workouts/:id", (req, res) => {
-  db.Workout.findById(req.params.id)
-    .then((foundWorkout) => {
-      res.json(foundWorkout);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
-});
+// router.get("/api/workouts/:id", (req, res) => {
+//   db.Workout.findById(req.params.id)
+//     .then((foundWorkout) => {
+//       res.json(foundWorkout);
+//     })
+//     .catch((err) => {
+//       res.json(err);
+//     });
+// });
 router.post("/api/workouts", (req, res) => {
   db.Workout.create(req.body)
     .then((newWorkout) => {
@@ -47,7 +47,7 @@ router.put("/api/workouts/:id", ({ body, params }, res) => {
     });
 });
 router.get("/api/workouts/range", (req, res) => {
-  db.Workout.find()
+  db.Workout.find({})
     .limit(7)
     .then((dbWorkout) => {
       res.json(dbWorkout);
